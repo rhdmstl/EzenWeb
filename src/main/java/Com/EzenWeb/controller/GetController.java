@@ -1,11 +1,18 @@
 package Com.EzenWeb.controller;
 
 import Com.EzenWeb.Domain.Dto.MemberDto;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Controller;
+import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 //56p
+
 @RestController
 @RequestMapping("/api/v1/get-api") //요청 url정의하기
 public class GetController {
@@ -43,6 +50,7 @@ public class GetController {
         return name + " "+email+" " +organization;
     }
     //62p
+
     @GetMapping("/requst2")
     public String getRequstParam2(@RequestParam Map< String , String> param){
         return param.toString();
