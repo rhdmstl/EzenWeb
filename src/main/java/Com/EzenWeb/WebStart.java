@@ -15,4 +15,8 @@ public class WebStart {
         -내장 : @override 상속메소드 재정의할때
         -메타 : 빌드[실행] 할때 자동코드실행
 
+            1. @SpringBootApplication : 컴포넌트 스캔
+                컴포넌트 사용하는 클래스들을 스캔[빈]에 저장
+                    1.@controller
+                    2.
 */
