@@ -3,7 +3,7 @@ package Com.EzenWeb;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication //스프링 기본설정값
+@SpringBootApplication //스프링 기본설정값(1.컴포넌트 스캔 2.설정파일 실행(properties)
 public class WebStart {
     public static void main(String[] args) {
         SpringApplication.run(WebStart.class); //현재클래스명.클래스

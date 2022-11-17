@@ -24,6 +24,12 @@ dependencies {
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa' //스프링데이터 JPA
+    implementation 'org.springframework.boot:spring-boot-starter-mail' //메일 스프링 SMTP
+    /*
+        ORM : 객체관계 매핑(자바랑 DB 묶음)
+
+     */
 }
 
 tasks.named('test') {

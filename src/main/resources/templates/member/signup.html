@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>회원가입</title>
+</head>
+<body>
+        <h3>회원가입</h3>
+
+        이메일 : <input type="memail" class="memail"><br>
+        <button type="button" onclick="getauth()">인증코드받기</button><br>
+        <div class="authbox">
+            <input type="text" class="authinput">
+            <button type="button" class="authbtn" onclick="authcode()">인증</button>
+            <span class="timerbox"></span>
+        </div>
+        전화번호 : <input type="text" class="mphone"><br>
+        비밀번호 : <input type="mpassword" class="mpassword"><br>
+        <button type="button" onclick="setmember()">가입하기</button>
+
+        <script  src="http://code.jquery.com/jquery-latest.min.js"></script>
+        <script src="/static/js/member/signup.js"></script>
+
+</body>
+</html>
