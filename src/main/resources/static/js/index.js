@@ -18,6 +18,7 @@ function getmember(){
                 headerbox += '<a href="/member/findpw"><button type="button">비밀번호찾기</button></a>'+
                              '<a href="/member/delete"><button type="button">회원탈퇴</button></a>'+
                              '<a href="/member/update"><button type="button">비밀번호수정</button></a>'+
+                             '<a href="/board/write"><button type="button">글쓰기</button></a>'+
                              '<a href=""><button type="button" onclick="logoutMno()"> 로그아웃 </button></a>'
             }
             document.querySelector('.headerbox').innerHTML = headerbox;
@@ -45,10 +46,10 @@ function list(){
         type : "get",
         success : function(re){
             console.log(re)
-            let html = '<tr> <th>번호</th> <th>이메일</th> <th>비밀번호</th> </tr>';
+            let html = '<tr> <th>번호</th> <th>이메일</th> <th>비밀번호</th> <th>전화번호</th> </tr>';
             console.log(html)
-            list.forEach( m =>{
-            html += '<tr> <th>'+m.mno+'</th> <th>'+m.memail+'</th> <th>'+m.mpassword+'</th> </tr>'
+            re.forEach( m =>{
+            html += '<tr> <th>'+m.mno+'</th> <th>'+m.memail+'</th> <th>'+m.mpassword+'</th> <th>'+m.mphone+'</th> </tr>'
             })
             document.querySelector('.mtable').innerHTML = html;
             console.log(html)

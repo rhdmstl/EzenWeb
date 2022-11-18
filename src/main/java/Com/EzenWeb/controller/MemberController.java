@@ -99,6 +99,6 @@ public class MemberController {
     @GetMapping("/getauth")
     public String getauth(@RequestParam("toemail")String toemail) {
         //return memberService.getauth(toemail);
-        return "rhdmstl";
+        return "1234";
     }
 }

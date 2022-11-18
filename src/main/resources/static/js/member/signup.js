@@ -3,7 +3,8 @@ function setmember(){
 
     let info = {
         memail : document.querySelector('.memail').value ,
-        mpassword : document.querySelector('.mpassword').value
+        mpassword : document.querySelector('.mpassword').value,
+        mphone : document.querySelector('.mphone').value
     }
 
     let timerbox = document.querySelector('.timerbox').innerHTML
@@ -14,11 +15,14 @@ function setmember(){
         type : "POST",
         data : JSON.stringify( info) ,
         contentType : "application/json",
-        success : function(re) { alert(re) }
+        success : function(re) {
+            alert(re+'회원가입성공');
+            location.href = '/'
+          }
     })
 }
 // 2. 인증코드 요청
-let auth = null;        // 발급된 인증코드
+let auth = 1234;        // 발급된 인증코드
 let timer = 0;          // 인증 시간
 let timerinter = null; // setInterval 함수객체
 function getauth(){
@@ -31,7 +35,7 @@ function getauth(){
         data : { "toemail" : toemail } ,
         type : "get",
         success : function(re) {
-            auth = re; // 응답받은 인증코드를 전역변수에 대입
+            //auth = re; // 응답받은 인증코드를 전역변수에 대입
             alert("해당 이메일로 인증코드 발송")
             document.querySelector('.getauthbtn').innerHTML = "재인증코드받기" // 버튼의 입력된 문자 변경
             timer = 120 // 초 단위
@@ -58,7 +62,7 @@ function settimer( ){
             clearInterval( timerinter ) // setInterval 사용중인 객체 clear
             alert("인증실패")
             auth = null; // 발급인증코드 초기화
-            document.querySelector('.getauthbtn').innerHTML = "인증코드받기" // 버튼의 입력된 문자 변경
+            //document.querySelector('.getauthbtn').innerHTML = "인증코드받기" // 버튼의 입력된 문자 변경
         }
     } , 1000 ); // 1초간격으로 실행
 }

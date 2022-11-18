@@ -35,9 +35,9 @@ public class BoardEntity {
     private int cno; //카테고리[fk]
 
     //형변환_빌더패턴을 이용한 객체생성[builder=시작,build=끝](메소드)
-    public BoardDto todto(){
+    public BoardDto toDto(){
         return BoardDto.builder()
-                .mno(this.mno)
+                .bno(this.bno)
                 .btitle( this.btitle)
                 .bcontent( this.bcontent)
                 .bview( this.bview)
