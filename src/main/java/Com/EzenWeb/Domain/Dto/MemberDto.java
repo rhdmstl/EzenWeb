@@ -1,6 +1,6 @@
 package Com.EzenWeb.Domain.Dto;
 
-import Com.EzenWeb.Domain.entity.MemberEntity;
+import Com.EzenWeb.Domain.entity.member.MemberEntity;
 import lombok.*;
 
 @NoArgsConstructor //빈생성자

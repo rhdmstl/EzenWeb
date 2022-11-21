@@ -6,10 +6,12 @@
 </head>
 <body>
     <h1>글쓰기 페이지</h1>
+    <input type="text" class="bcname"> <button type="button" onclick="setbcategory()">카테고리 추가</button>
+    <span class="bcategorybox"></span>
     <form>
         제목 : <input type="text" class="btitle">
         내용 : <input type="text" class="bcontent">
-        첨부파일 : <input type="file" class="bfile">
+        첨부파일 : <input type="text" class="bfile">
         <button type="button" onclick="setboard()">등록</button>
         <a href="/board/list"> <button type="button">목록</button> </a>
         <a href="/"><button type="button">메인페이지</button></a>

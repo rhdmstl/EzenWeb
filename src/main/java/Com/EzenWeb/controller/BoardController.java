@@ -1,14 +1,13 @@
 package Com.EzenWeb.controller;
 
+import Com.EzenWeb.Domain.Dto.BcategoryDto;
 import Com.EzenWeb.Domain.Dto.BoardDto;
 import Com.EzenWeb.Service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController //연동됨 MVC지향
@@ -44,14 +43,14 @@ public class BoardController { //요청/응답만 한다
         return boardService.setboard(boardDto);
     }
     @GetMapping("/boardlist")//2.게시물 목록조회[페이징,검색]
-    public List<BoardDto> boardlist(){
-        return boardService.boardlist();
+    public List<BoardDto> boardlist(@RequestParam("bcno")int bcno){
+        return boardService.boardlist(bcno);
     }
     @GetMapping("/getboard")//3.게시물 개별조회
     public BoardDto getboard(@RequestParam("bno") int bno){
         return boardService.getboard(bno);
     }
-    @DeleteMapping("/deleteboard") //4.게시물삭제
+    @DeleteMapping("/delboard") //4.게시물삭제
     public boolean deleteboard(@RequestParam("bno") int bno){
         return boardService.deleteboard(bno);
     }
@@ -59,6 +58,15 @@ public class BoardController { //요청/응답만 한다
     public boolean upboard(@RequestBody BoardDto boardDto){
         return boardService.upboard(boardDto);
     }
+    @PostMapping("/setbcategory")//6.카테고리 등록
+    public boolean setbcategory(@RequestBody BcategoryDto bcategoryDto ){
+        return boardService.setbcategory(bcategoryDto);
+    }
+    @GetMapping("/bcategorylist") //7.모든 카테고리 출력
+    public List<BcategoryDto> Bcategorylist(){
+        return boardService.bcategorylist();
+    }
+
 }
 //@RequestBody = 한번에 받기
 //@RequestParam = 하나씩 가져오기

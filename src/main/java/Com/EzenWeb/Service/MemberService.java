@@ -1,17 +1,12 @@
 package Com.EzenWeb.Service;
 
 import Com.EzenWeb.Domain.Dto.MemberDto;
-import Com.EzenWeb.Domain.entity.MemberEntity;
-import Com.EzenWeb.Domain.entity.MemberRepository;
-import org.aspectj.apache.bcel.util.ClassPath;
+import Com.EzenWeb.Domain.entity.member.MemberEntity;
+import Com.EzenWeb.Domain.entity.member.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.io.ClassPathResource;
-import org.springframework.core.io.Resource;
 import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMailMessage;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.GetMapping;
 
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
@@ -32,6 +27,21 @@ public class MemberService {
     @Autowired
     private JavaMailSender mailSender;
     // -------------------------------- 서비스 메소드 --------------------------//
+    //0.로그인된 엔티티 호출
+    public MemberEntity getEntity(){
+        //로그인 정보확인
+        Object object = request.getSession().getAttribute("loginMno");
+        if(object == null ){return null;}
+        //로그인된 회원번호
+        int mno = (Integer)object;
+        //3. 회원번호 --> 회원정보 호출
+        Optional<MemberEntity> optional = memberRepository.findById( mno);
+        if(!optional.isPresent()){return null;}
+        // 4. 로그인된 회원의 엔티티
+        MemberEntity memberEntity =  optional.get();
+        //5.전달
+        return optional.get();
+    }
     // 1. 회원가입
     @Transactional
     public int setmember(MemberDto memberDto ){

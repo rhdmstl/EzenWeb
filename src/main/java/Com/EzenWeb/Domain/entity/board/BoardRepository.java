@@ -1,4 +1,4 @@
-package Com.EzenWeb.Domain.entity;
+package Com.EzenWeb.Domain.entity.board;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

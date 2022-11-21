@@ -11,6 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 public class TestController {
     @GetMapping("")
     public Resource gettext(){
-        return new ClassPathResource("templates/test1.html");
+        return new ClassPathResource("templates/test.html");
     }
 }

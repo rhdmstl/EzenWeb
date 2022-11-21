@@ -1,11 +1,14 @@
-package Com.EzenWeb.Domain.entity;
+package Com.EzenWeb.Domain.entity.member;
 
 
 import Com.EzenWeb.Domain.Dto.MemberDto;
+import Com.EzenWeb.Domain.entity.BaseEntity;
+import Com.EzenWeb.Domain.entity.board.BoardEntity;
 import lombok.*;
 
 import javax.persistence.*;
-import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity //해당연결된 db의 테이블과 매핑
 @Table(name = "member")//테이블명
@@ -15,7 +18,7 @@ import java.time.LocalDateTime;
 @Setter //세터
 @ToString //투스트링
 @Builder //객체생성 안전성보장
-public class MemberEntity {
+public class MemberEntity extends BaseEntity {
     //필드
     @Id //엔티티당 무조건 1개이상
     @GeneratedValue(strategy = GenerationType.IDENTITY) //자동번호 부여
@@ -28,6 +31,10 @@ public class MemberEntity {
 
     @Column(nullable = false) //not null
     private String mphone; //회원전화번호
+
+    @OneToMany(mappedBy = "memberEntity")
+    @Builder.Default
+    private List<BoardEntity>  BoardEntities = new ArrayList<>();
 
     public MemberDto toDto(){
         return MemberDto
