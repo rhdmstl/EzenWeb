@@ -19,7 +19,7 @@ public class BoardDto {
     private String bfile; //첨부파일
     //----fk--------------------------------//
     private int mno; //작성자[fk]
-    private int bcno; //카테고리[fk]
+    private int bcno;
     private String memail;
 
     //형변환_생성자를 이용한 객체생성[builder=시작,build=끝]

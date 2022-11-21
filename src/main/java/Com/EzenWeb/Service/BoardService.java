@@ -2,10 +2,16 @@ package Com.EzenWeb.Service;
 
 import Com.EzenWeb.Domain.Dto.BcategoryDto;
 import Com.EzenWeb.Domain.Dto.BoardDto;
-import Com.EzenWeb.Domain.entity.bcategory.BcategoryEntity;
+import Com.EzenWeb.Domain.Dto.GuestCategoryDto;
+import Com.EzenWeb.Domain.Dto.GuestDto;
+import Com.EzenWeb.Domain.entity.bcategory.BcategoryEntyti;
 import Com.EzenWeb.Domain.entity.bcategory.BcategoryRepository;
 import Com.EzenWeb.Domain.entity.board.BoardEntity;
 import Com.EzenWeb.Domain.entity.board.BoardRepository;
+import Com.EzenWeb.Domain.entity.guestcategory.GuestCategoryEntity;
+import Com.EzenWeb.Domain.entity.guestcategory.GuestCategoryRepository;
+import Com.EzenWeb.Domain.entity.guset.GuestEntity;
+import Com.EzenWeb.Domain.entity.guset.GuestRepository;
 import Com.EzenWeb.Domain.entity.member.MemberEntity;
 import Com.EzenWeb.Domain.entity.member.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +38,10 @@ public class BoardService {//디비처리
     private BcategoryRepository bcategoryRepository;    // 카테고리 리포지토리 객체 선언
     @Autowired
     private MemberService memberService;
+    @Autowired
+    private GuestRepository guestRepository;
+    @Autowired
+    private GuestCategoryRepository guestCategoryRepository;
     // @Transactional : 엔티티 DML 적용 할때 사용되는 어노테이션
     // 1. 메소드
             /*
@@ -49,9 +59,9 @@ public class BoardService {//디비처리
         if( memberEntity == null ){ return false; }
         // ---------------------------- //
         // ------------ 선택한 카테고리 번호 --> 카테고리 엔티티 검색 --------------  //
-        Optional<BcategoryEntity> optional = bcategoryRepository.findById( boardDto.getBcno() );
+        Optional<BcategoryEntyti> optional = bcategoryRepository.findById( boardDto.getBcno() );
         if ( !optional.isPresent()) { return false;}
-        BcategoryEntity bcategoryEntity = optional.get();
+        BcategoryEntyti bcategoryEntity = optional.get();
         // --------------------------  //
         BoardEntity boardEntity  = boardRepository.save( boardDto.toEntity() );  // 1. dto --> entity [ INSERT ] 저장된 entity 반환
         if( boardEntity.getBno() != 0 ){   // 2. 생성된 entity의 게시물번호가 0 이 아니면  성공
@@ -72,7 +82,7 @@ public class BoardService {//디비처리
             elist = boardRepository.findAll();
         }
         else{ //전체보기(0)가 아니면 카테고리별 보기
-            BcategoryEntity bcentity = bcategoryRepository.findById(bcno).get();
+            BcategoryEntyti bcentity = bcategoryRepository.findById(bcno).get();
             elist = bcentity.getBoardEntityList(); //해당 엔티티의 게시물 목록
         }
         //컨트롤한테 전달하기위해 entity -> dto 형변환하기
@@ -119,16 +129,40 @@ public class BoardService {//디비처리
             return false;
         }
     }
-    public boolean setbcategory( BcategoryDto bcategoryDto){
-        BcategoryEntity entity = bcategoryRepository.save(bcategoryDto.toEntity());
+    public boolean setbcategory( BcategoryDto bcategoryDto){    //6.카테고리 등록
+        BcategoryEntyti entity = bcategoryRepository.save(bcategoryDto.toEntity());
         if(entity.getBcno() != 0){return true;}
         else { return false;}
     }
-    public List<BcategoryDto> bcategorylist(){
-        List<BcategoryEntity> entityList = bcategoryRepository.findAll();
+    public List<BcategoryDto> bcategorylist(){  //7.모든 카테고리 출력
+        List<BcategoryEntyti> entityList = bcategoryRepository.findAll();
         List<BcategoryDto> dtolist = new ArrayList<>();//화살표함수 [람다식표현 js] (인수) => {실행코드}
         entityList.forEach(e -> dtolist.add(e.toDto()));
         return dtolist;
+    }
+    public boolean setvisit(GuestDto guestDto){ //8.방명록 등록
+        GuestEntity entity = guestRepository.save(guestDto.toEntity());
+        if(entity.getBgno()!= 0){return true;}
+        else { return false;}
+    }
+    public List<GuestDto> guestlist(){  //9.방명록 목록
+        List<GuestDto> guestlist = new ArrayList<>();
+        List<GuestEntity> list = guestRepository.findAll();
+        for(GuestEntity entity : list){
+            guestlist.add(entity.toDto());
+        }
+        return guestlist;
+    }
+    public boolean setvisitbcategory( BcategoryDto bcategoryDto){    //6.카테고리 등록
+        GuestCategoryEntity entity = bcategoryRepository.save(GuestCategoryDto.toEntity());
+        if(entity.getBgcno() != 0){return true;}
+        else { return false;}
+    }
+    public List<GuestCategoryDto> visitbcategorylist(){  //7.모든 카테고리 출력
+        List<GuestCategoryEntity> entityList = guestCategoryRepository.findAll();
+        List<GuestCategoryDto> gdtolist = new ArrayList<>();//화살표함수 [람다식표현 js] (인수) => {실행코드}
+        entityList.forEach(e -> gdtolist.add(e.toDto()));
+        return gdtolist;
     }
 }
 // @Transactional  = 엔티티 수정(최소단위)
