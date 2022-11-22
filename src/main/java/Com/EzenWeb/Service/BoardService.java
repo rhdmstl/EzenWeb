@@ -153,11 +153,11 @@ public class BoardService {//디비처리
         }
         return guestlist;
     }
-   /* public boolean setvisitcategory( GuestCategoryDto guestCategoryDto){    //6.카테고리 등록
-        GuestCategoryEntity entity = bcategoryRepository.save(GuestCategoryDto.toEntity());
+   public boolean setvisitcategory( GuestCategoryDto guestCategoryDto){    //6.카테고리 등록
+        GuestCategoryEntity entity = guestCategoryRepository.save(guestCategoryDto.toEntity());
         if(entity.getBgcno() != 0){return true;}
-        else { return false;}
-    }*/
+        return false;
+    }
     public List<GuestCategoryDto> visitcategorylist(){  //7.모든 카테고리 출력
         List<GuestCategoryEntity> entityList = guestCategoryRepository.findAll();
         List<GuestCategoryDto> gdtolist = new ArrayList<>();//화살표함수 [람다식표현 js] (인수) => {실행코드}

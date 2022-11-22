@@ -25,7 +25,7 @@ public class GuestCategoryEntity {
     @Column(nullable = false) //not null
     private  String bgcname;  // 카테고리이름
 
-    @OneToMany(mappedBy = "bgno")
+    @OneToMany(mappedBy = "guestCategoryEntity")
     @Builder.Default
     private List<GuestEntity> guestEntity = new ArrayList<>();
 

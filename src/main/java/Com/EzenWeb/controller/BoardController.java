@@ -2,6 +2,7 @@ package Com.EzenWeb.controller;
 
 import Com.EzenWeb.Domain.Dto.BcategoryDto;
 import Com.EzenWeb.Domain.Dto.BoardDto;
+import Com.EzenWeb.Domain.Dto.GuestCategoryDto;
 import Com.EzenWeb.Domain.Dto.GuestDto;
 import Com.EzenWeb.Service.BoardService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,8 +96,8 @@ public class BoardController { //요청/응답만 한다
     }
 
     @PostMapping("/setvisitcategory")//6.카테고리 등록
-    public boolean setvisitcategory(@RequestBody BcategoryDto bcategoryDto) {
-        return boardService.setbcategory(bcategoryDto);
+    public boolean setvisitcategory(@RequestBody GuestCategoryDto guestCategoryDto) {
+        return boardService.setvisitcategory(guestCategoryDto);
     }
 
     @GetMapping("/visitcategorylist") //7.모든 카테고리 출력

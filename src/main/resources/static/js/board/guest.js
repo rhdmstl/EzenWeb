@@ -47,24 +47,27 @@ function setvisitcategory(){
 //3.모든 카테고리 출력
 visitcategorylist();
 function visitcategorylist(){
+ console.log('visit categorylist')
     $.ajax({
       url : "/board/visitcategorylist"  ,
       type : 'GET',
       success : function(re) {
-        let html = '';
+        console.log(re)
+         let html = '<button type="button" onclick="bcnochage(0)">전체보기</button>';
         re.forEach(c => {
             html += '<button type="button" onclick=gcnochange('+c.bgcno+')">'+c.bgcname+'</button>'
         })
         document.querySelector('.gcategorybox').innerHTML = html
-        cbtn = document.querySelectorAll('.cbtn') //위에서 생성된 카테고리 버튼들 호출
-        }
+        console.log(html)
+       }
     })
 }
-//4.카테고리를 선택했을떄 선택된 카테고리번호 변경
-function gcnochange(cno){
-    bgcno = cno
+// 4. 카테고리 버튼을 클릭했을때 선택된 카테고리 번호 대입
+function bcnochage( cno ){
+    bgcno = cno;
     console.log(bgcno)
-    alert(bgcno+'를 선택')
+    alert( bgcno );
+    visitcategorylist();
 }
 //게시물 출력
 function guestlist(){
