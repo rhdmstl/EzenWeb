@@ -47,12 +47,12 @@ function setvisitcategory(){
 //3.모든 카테고리 출력
 visitcategorylist();
 function visitcategorylist(){
- console.log('visit categorylist')
+ console.log('visitcategorylist')
     $.ajax({
       url : "/board/visitcategorylist"  ,
       type : 'GET',
       success : function(re) {
-        console.log(re)
+        console.log('리스트출력 : '+re)
          let html = '<button type="button" onclick="bcnochage(0)">전체보기</button>';
         re.forEach(c => {
             html += '<button type="button" onclick=gcnochange('+c.bgcno+')">'+c.bgcname+'</button>'

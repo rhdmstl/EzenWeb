@@ -101,8 +101,8 @@ public class BoardController { //요청/응답만 한다
     }
 
     @GetMapping("/visitcategorylist") //7.모든 카테고리 출력
-    public List<BcategoryDto> visitcategorylist() {
-        return boardService.bcategorylist();
+    public List<GuestCategoryDto> visitcategorylist() {
+        return boardService.visitcategorylist();
     }
 
 }
