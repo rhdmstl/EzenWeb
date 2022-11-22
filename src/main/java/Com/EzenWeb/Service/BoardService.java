@@ -57,7 +57,7 @@ public class BoardService {//디비처리
         // ---------- 로그인 회원 찾기 메소드 실행 --> 회원엔티티 검색 --------------  //
         MemberEntity memberEntity = memberService.getEntity();
         if( memberEntity == null ){ return false; }
-        // ---------------------------- //
+
         // ------------ 선택한 카테고리 번호 --> 카테고리 엔티티 검색 --------------  //
         Optional<BcategoryEntyti> optional = bcategoryRepository.findById( boardDto.getBcno() );
         if ( !optional.isPresent()) { return false;}
@@ -129,35 +129,61 @@ public class BoardService {//디비처리
             return false;
         }
     }
+    @Transactional
     public boolean setbcategory( BcategoryDto bcategoryDto){    //6.카테고리 등록
         BcategoryEntyti entity = bcategoryRepository.save(bcategoryDto.toEntity());
         if(entity.getBcno() != 0){return true;}
         else { return false;}
     }
+    @Transactional
     public List<BcategoryDto> bcategorylist(){  //7.모든 카테고리 출력
         List<BcategoryEntyti> entityList = bcategoryRepository.findAll();
         List<BcategoryDto> dtolist = new ArrayList<>();//화살표함수 [람다식표현 js] (인수) => {실행코드}
         entityList.forEach(e -> dtolist.add(e.toDto()));
         return dtolist;
     }
+    @Transactional
     public boolean setvisit(GuestDto guestDto){ //8.방명록 등록
         GuestEntity entity = guestRepository.save(guestDto.toEntity());
-        if(entity.getBgno()!= 0){return true;}
+        // ------------ 선택한 카테고리 번호선택
+        Optional<GuestCategoryEntity> optional = guestCategoryRepository.findById(guestDto.getBgcno());
+        if(!optional.isPresent()){return false;}
+        GuestCategoryEntity guestCategoryEntity = optional.get();
+
+        if(entity.getBgno()!= 0){
+            entity.setGuestCategoryEntity(guestCategoryEntity);
+            guestCategoryEntity.getGuestEntity().add(entity);
+            return true;
+        }
         else { return false;}
     }
-    public List<GuestDto> guestlist(){  //9.방명록 목록
+    @Transactional
+    public List<GuestDto> guestlist(int bgcno){  //9.방명록 목록
         List<GuestDto> guestlist = new ArrayList<>();
-        List<GuestEntity> list = guestRepository.findAll();
-        for(GuestEntity entity : list){
-            guestlist.add(entity.toDto());
+        Optional<GuestCategoryEntity> optional = guestCategoryRepository.findById(bgcno);
+        if(!optional.isPresent()){ return null;}
+        if(bgcno == 4){
+            System.out.println("test");
+            List<GuestEntity> entitylist = guestRepository.findAll();
+            for(GuestEntity entity : entitylist){
+                guestlist.add(entity.toDto());
+            }
+        } else {
+            GuestCategoryEntity guestCategoryEntity = optional.get();
+            List<GuestEntity> list = guestCategoryEntity.getGuestEntity();
+            for(GuestEntity guestEntity : list){
+                guestlist.add(guestEntity.toDto());
+            }
         }
         return guestlist;
     }
+    @Transactional
    public boolean setvisitcategory( GuestCategoryDto guestCategoryDto){    //6.카테고리 등록
         GuestCategoryEntity entity = guestCategoryRepository.save(guestCategoryDto.toEntity());
         if(entity.getBgcno() != 0){return true;}
         return false;
     }
+    @Transactional
     public List<GuestCategoryDto> visitcategorylist(){  //7.모든 카테고리 출력
         List<GuestCategoryEntity> entityList = guestCategoryRepository.findAll();
         List<GuestCategoryDto> gdtolist = new ArrayList<>();//화살표함수 [람다식표현 js] (인수) => {실행코드}

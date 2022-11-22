@@ -91,8 +91,8 @@ public class BoardController { //요청/응답만 한다
     }
 
     @GetMapping("/guestlist") //9.방명록 목록
-    public List<GuestDto> guestlist() {
-        return boardService.guestlist();
+    public List<GuestDto> guestlist(@RequestParam int bgcno) {
+        return boardService.guestlist(bgcno);
     }
 
     @PostMapping("/setvisitcategory")//6.카테고리 등록
