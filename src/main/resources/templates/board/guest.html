@@ -7,18 +7,19 @@
 </head>
 <body>
     <h1>글쓰기 페이지</h1>
-    <input type="text" class="bgcname"> <button type="button" onclick="setbcategory()">카테고리 추가</button>
-    <span class="bcategorybox"></span>
+    <input type="text" class="bgcname"> <button type="button" onclick="setvisitcategory()">카테고리 추가</button>
+    <span class="gcategorybox"></span>
     <form>
         제목 : <input type="text" class="bgtitle">
         내용 : <input type="text" class="bgcontent">
+
         <button type="button" onclick="setvisit()">등록</button>
         <a href="/"><button type="button">메인페이지</button></a>
     </form>
 
     <h1>글 목록 </h1>
-    <table class="btable">
-        <div class="bcategorybox"></div>
+    <table class="gtable">
+
     </table>
 
     <script  src="http://code.jquery.com/jquery-latest.min.js"></script>

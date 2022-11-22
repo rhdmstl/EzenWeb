@@ -43,8 +43,8 @@ public class BoardController { //요청/응답만 한다
         return new ClassPathResource("/templates/board/update.html");
     }
 
-    @GetMapping("/guestwrite")
-    public Resource guestwrite() {
+    @GetMapping("/guest")
+    public Resource guest() {
         return new ClassPathResource("/templates/board/guest.html");
     }
 
@@ -93,13 +93,14 @@ public class BoardController { //요청/응답만 한다
     public List<GuestDto> guestlist() {
         return boardService.guestlist();
     }
-    @PostMapping("/setvisitbcategory")//6.카테고리 등록
-    public boolean setvisitbcategory(@RequestBody BcategoryDto bcategoryDto) {
+
+    @PostMapping("/setvisitcategory")//6.카테고리 등록
+    public boolean setvisitcategory(@RequestBody BcategoryDto bcategoryDto) {
         return boardService.setbcategory(bcategoryDto);
     }
 
-    @GetMapping("/visitbcategorylist") //7.모든 카테고리 출력
-    public List<BcategoryDto> visitbcategorylist() {
+    @GetMapping("/visitcategorylist") //7.모든 카테고리 출력
+    public List<BcategoryDto> visitcategorylist() {
         return boardService.bcategorylist();
     }
 

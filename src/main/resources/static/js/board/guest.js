@@ -1,14 +1,14 @@
 alert('방명록')
 //4.카테고리 기본값 전역변수
 let bgcno = 2;
-
+guestlist();
 function setvisit(){ //1.게시물등록
+
     let data = {
         bgtitle : document.querySelector('.bgtitle').value ,
         bgcontent : document.querySelector('.bgcontent').value,
         bgcno : bgcno
     }
-
     $.ajax({
         url : "/board/setvisit",
         type : 'POST',
@@ -17,7 +17,7 @@ function setvisit(){ //1.게시물등록
         success : function(re){
             if(re == true){
                 alert(re+'등록완료')
-                location.href = '/'
+                location.reload;
             }else{
                 alert(re+'등록실패')
                 location.reload;
@@ -27,17 +27,16 @@ function setvisit(){ //1.게시물등록
 }
 
 //2. 게시물 카테고리 등록
-function setbcategory(){
-    let data = { bcname : document.querySelector('.bcname').value }
+function setvisitcategory(){
+    let data = { bgcname : document.querySelector('.bgcname').value }
     $.ajax({
-        url : "/board/setbcategory",
+        url : "/board/setvisitcategory",
         type : 'POST',
         data : JSON.stringify(data),
         contentType : "application/json",
         success : function(re){
             if(re == true){
                 alert(re+'등록 성공')
-                bcategorylist()
             }else{
                 alert('등록 실패')
             }
@@ -46,24 +45,46 @@ function setbcategory(){
 }
 
 //3.모든 카테고리 출력
-bcategorylist();
-function bcategorylist(){
+visitcategorylist();
+function visitcategorylist(){
     $.ajax({
-      url : "/board/bcategorylist"  ,
+      url : "/board/visitcategorylist"  ,
       type : 'GET',
       success : function(re) {
         let html = '';
         re.forEach(c => {
-            html += '<button type="button" onclick="bcnochange('+c.bcno+')">'+c.bcname+'</button>'
+            html += '<button type="button" onclick=gcnochange('+c.bgcno+')">'+c.bgcname+'</button>'
         })
-        document.querySelector('.bcategorybox').innerHTML = html
+        document.querySelector('.gcategorybox').innerHTML = html
         cbtn = document.querySelectorAll('.cbtn') //위에서 생성된 카테고리 버튼들 호출
         }
     })
 }
 //4.카테고리를 선택했을떄 선택된 카테고리번호 변경
-function bcnochange(cno){
-    bcno = cno
-    console.log(bcno)
-    alert(bcno+'를 선택')
+function gcnochange(cno){
+    bgcno = cno
+    console.log(bgcno)
+    alert(bgcno+'를 선택')
+}
+//게시물 출력
+function guestlist(){
+    console.log('dd')
+    $.ajax({
+      url: '/board/guestlist',
+      type: 'get',
+      data : {"bgcno" : bgcno},
+      success: function(re){
+        alert(re)
+        console.log(re)
+        let html = '<tr>  <th> 번호 </th> <th> 제목 </th> <th> 내용 </th> </tr>'
+        console.log(html)
+        re.forEach((b) =>{
+            html += "<tr>"+
+                    '<td>'+b.bgno+'</td> <td>'+b.bgtitle+'</td> <td>'+b.bgcontent+'</td>'+
+                    '</tr>';
+        })
+        document.querySelector('.gtable').innerHTML = html
+        console.log(html)
+      }
+    })
 }

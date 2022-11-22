@@ -13,7 +13,8 @@ function getmember(){
 
             if(re == "0"){ //로그인안함
                 headerbox += '<a href="/member/signup"><button type="button">회원가입</button></a>'+
-                             '<a href="/member/login"><button type="button">로그인</button></a>'
+                             '<a href="/member/login"><button type="button">로그인</button></a>'+
+                             '<a href="/board/guest"><button type="button">방명록</button></a>'
             }else{// 로그인 했다.. [ 회원번호가 0 이 아니면 ]
                 headerbox += '<a href="/member/findpw"><button type="button">비밀번호찾기</button></a>'+
                              '<a href="/member/delete"><button type="button">회원탈퇴</button></a>'+
