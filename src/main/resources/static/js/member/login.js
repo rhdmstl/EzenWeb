@@ -14,7 +14,8 @@ function getmember(){
         data : JSON.stringify(info),
         contentType: "application/json;",
         success: function(re){
-            alert(re)
+            alert(re+'성공')
+            location.href = '/';
         }
     })
 }

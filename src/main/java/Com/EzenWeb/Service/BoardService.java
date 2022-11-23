@@ -19,17 +19,27 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Service //컴포넌트
 public class BoardService {//디비처리
     //==========================전역변수==================================//
     @Autowired
     private HttpServletRequest request; // 요청 객체 선언
+    @Autowired
+    HttpServletResponse response; //응답객체 선언
     @Autowired
     private BoardRepository boardRepository;    // 게시물 리포지토리 객체 선언
     @Autowired
@@ -42,6 +52,8 @@ public class BoardService {//디비처리
     private GuestRepository guestRepository;
     @Autowired
     private GuestCategoryRepository guestCategoryRepository;
+    //*첨부파일 경로
+    String path = "C:\\Users\\504\\Desktop\\springweb\\EzenWeb\\src\\main\\resources\\static\\";
     // @Transactional : 엔티티 DML 적용 할때 사용되는 어노테이션
     // 1. 메소드
             /*
@@ -51,7 +63,39 @@ public class BoardService {//디비처리
                 4. delete : boardRepository.delete( 삭제할엔티티 )
              */
     //==========================서비스==================================//
-
+    //0.첨부파일 다운
+    public void filedown(String filename){
+        //uuid 제거
+        String realfilename = "";
+        String [] split = filename.split("_");//_기준으로 자르기 (사용자가 올린 파일명에 _가 있을수도있으니
+        for(int i = 0; i < split.length; i++){ //uuid제외한 반복문 돌리기
+            realfilename += split[i];           //뒷자리 문자열 추가
+            if(split.length-1 == i ){ //마지막 인덱스일때
+                realfilename += "_";
+            }
+        }
+        //1.경로찾기
+        String filepath = path + filename;
+        //2.헤더구성
+        try {                   //다운로드 형식               다운로드에 표시할 파일명
+            response.setHeader("Content-Dispoition", "application;filename=" + URLEncoder.encode(realfilename,"UTF-8"));
+           File file = new File(filepath);
+            //3.다운로드 할 바이트 읽어올 스트림 객체 선언
+            BufferedInputStream inputStream = new BufferedInputStream(new FileInputStream(file));
+            //파일의 길이만큼 읽어와서 저장
+            byte[] bytes = new byte[(int)file.length()];
+            //읽어온 바이트 저장
+            inputStream.read(bytes);
+            //출력
+            BufferedOutputStream outputStream = new BufferedOutputStream(response.getOutputStream());
+            //응답
+            outputStream.write(bytes);
+            //버퍼 초기화 혹은 스트림 닫기
+            outputStream.flush();
+            outputStream.close();
+            inputStream.close();
+        }catch (Exception e){ System.out.println("파일이름 표시 오류** : "+e); }
+    }
     @Transactional //1.게시물쓰기
     public boolean setboard(BoardDto boardDto){//1.게시물쓰기[첨부파일]
         // ---------- 로그인 회원 찾기 메소드 실행 --> 회원엔티티 검색 --------------  //
@@ -65,6 +109,21 @@ public class BoardService {//디비처리
         // --------------------------  //
         BoardEntity boardEntity  = boardRepository.save( boardDto.toEntity() );  // 1. dto --> entity [ INSERT ] 저장된 entity 반환
         if( boardEntity.getBno() != 0 ){   // 2. 생성된 entity의 게시물번호가 0 이 아니면  성공
+            //*첨부파일등록
+            String filename = boardDto.getBfile().getOriginalFilename(); //실제 유저가 입력한 파일 읽어옴
+            //uuid
+            String uuid = UUID.randomUUID().toString(); //난수생성
+            filename = uuid+"_"+boardDto.getBfile().getOriginalFilename();
+
+            boardEntity.setBfile(filename); //읽어온 파일 저장
+
+            //파일 저장
+            try {
+                File file = new File(path+filename); //경로+파일명
+                boardDto.getBfile().transferTo(new File(path+filename));
+            }
+            catch (Exception e){ System.out.println("**첨부파일업로드 오류 : "+e); }
+
             // 1. 회원 <---> 게시물 연관관계 대입
             boardEntity.setMemberEntity( memberEntity ); // ***!!!! 5. fk 대입
             memberEntity.getBoardEntities().add( boardEntity); // *** 양방향 [ pk필드에 fk 연결 ]
@@ -122,7 +181,6 @@ public class BoardService {//디비처리
             BoardEntity entity = optional.get();
             entity.setBtitle( boardDto.getBtitle());
             entity.setBtitle( boardDto.getBcontent());
-            entity.setBtitle( boardDto.getBfile());
             boardRepository.save(entity);
             return true;
         }else {
@@ -189,6 +247,30 @@ public class BoardService {//디비처리
         List<GuestCategoryDto> gdtolist = new ArrayList<>();//화살표함수 [람다식표현 js] (인수) => {실행코드}
         entityList.forEach(e -> gdtolist.add(e.toDto()));
         return gdtolist;
+    }
+    @Transactional
+    public boolean guestput(GuestDto guestDto){ //방명록 수정
+        Optional<GuestEntity> optional = guestRepository.findById(guestDto.getBgno());
+        if(optional.isPresent()){
+            GuestEntity entity = optional.get();
+            entity.setBgtitle(guestDto.getBgtitle());
+            entity.setBgcontent(guestDto.getBgcontent());
+            guestRepository.save(entity);
+            return true;
+        }else {
+            return false;
+        }
+    }
+    @Transactional
+    public boolean deleteguest(@RequestParam("bgno") int bgno){  //4.게시물삭제
+        Optional<GuestEntity> optional = guestRepository.findById(bgno);
+        if(optional.isPresent()) {
+            GuestEntity entity = optional.get(); //찾은 엔티티가져오기
+            guestRepository.delete(entity); //찾은 엔티티 삭제
+            return true; //전달
+        }else {
+            return false; //전달
+        }
     }
 }
 // @Transactional  = 엔티티 수정(최소단위)

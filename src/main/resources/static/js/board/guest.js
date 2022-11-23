@@ -90,3 +90,27 @@ function guestlist(){
       }
     })
 }
+function upboard(){
+    alert('수정')
+    let data = {
+            btitle : document.querySelector('.bgtitle').value ,
+            bcontent : document.querySelector('.bgcontent').value,
+            bgno = bgno
+        }
+
+    $.ajax({
+        url : "/board/guestput",
+        type : 'put',
+        data : JSON.stringify(data),
+        contentType : "application/json",
+        success : function(re){
+            if(re == true){
+                alert(re+'수정완료')
+                location.reload; 
+            }else{
+                alert('등록실패')
+                location.reload;
+            }
+        }
+    })
+}

@@ -2,7 +2,7 @@ alert('글쓰기')
 //4.카테고리 기본값 전역변수
 let bcno = 2;
 
-function setboard(){ //1.게시물등록
+/*function setboard(){ //1.게시물등록
     let data = {
         btitle : document.querySelector('.btitle').value ,
         bcontent : document.querySelector('.bcontent').value,
@@ -15,6 +15,31 @@ function setboard(){ //1.게시물등록
         type : 'POST',
         data : JSON.stringify(data),
         contentType : "application/json",
+        success : function(re){
+            if(re == true){
+                alert(re+'등록완료')
+                location.href = '/'
+            }else{
+                alert(re+'등록실패')
+                location.reload;
+            }
+        }
+    })
+}*/
+function setboard(){ //1.게시물등록 (첨부파일 등록을 위해 수정)
+
+    let boardform = document.querySelector('.boardform')
+    let formdata = new FormData(boardform)
+    formdata.set("bcno",bcno) ///폼에 카테고리 번호 추가
+                //"이름",data
+console.log(formdata)
+    $.ajax({
+        url : "/board/setboard",
+        type : 'POST',
+        data : formdata,
+        //첨부파일을 위한 컨테츠타입,프로세스
+        contentType : false,
+        processData : false,
         success : function(re){
             if(re == true){
                 alert(re+'등록완료')

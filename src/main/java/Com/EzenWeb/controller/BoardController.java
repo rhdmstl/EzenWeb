@@ -51,7 +51,8 @@ public class BoardController { //요청/응답만 한다
 
     //==========================모델요청과 응답==================================//
     @PostMapping("/setboard") //1.게시물쓰기[첨부파일]
-    public boolean setboard(@RequestBody BoardDto boardDto) {
+    public boolean setboard( BoardDto boardDto) {
+        System.out.println("**확인 : "+boardDto.toString());
         return boardService.setboard(boardDto);
     }
 
@@ -104,7 +105,18 @@ public class BoardController { //요청/응답만 한다
     public List<GuestCategoryDto> visitcategorylist() {
         return boardService.visitcategorylist();
     }
-
+    @GetMapping("/filedown")
+    public void filedown(@RequestParam("filename") String filename){
+        boardService.filedown(filename);
+    }
+    @PutMapping("/guestput")
+    public boolean guestput(@RequestBody GuestDto guestDto){
+        return boardService.guestput(guestDto);
+    }
+    @DeleteMapping("/deleteguest")
+    public boolean deleteguest(@RequestParam ("bgno") int bgno){
+        return boardService.deleteguest(bgno);
+    }
 }
 //@RequestBody = 한번에 받기
 //@RequestParam = 하나씩 가져오기
