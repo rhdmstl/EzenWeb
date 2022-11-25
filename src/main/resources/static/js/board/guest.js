@@ -106,7 +106,7 @@ function upboard(){
         success : function(re){
             if(re == true){
                 alert(re+'수정완료')
-                location.reload; 
+                location.reload;
             }else{
                 alert('등록실패')
                 location.reload;

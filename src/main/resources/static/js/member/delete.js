@@ -6,7 +6,7 @@ function setdelete(){
     let mpassword = document.querySelector('.mpassword').value;
 
     $.ajax({
-        url : "/member/setdelete",
+        url : "/member/delboard",
         type : "delete",
         data : { "mpassword" : mpassword},
         success : function(re){

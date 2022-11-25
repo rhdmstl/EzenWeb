@@ -18,6 +18,7 @@ public class BoardDto {
     //작성/수정 -> 상속
     private int bview; //조회수
     private MultipartFile bfile; //첨부파일
+    private String bfilename; //첨부파일 호출용
     //----fk--------------------------------//
     private int mno; //작성자[fk]
     private int bcno;

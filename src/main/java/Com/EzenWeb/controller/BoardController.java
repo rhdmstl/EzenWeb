@@ -67,8 +67,8 @@ public class BoardController { //요청/응답만 한다
     }
 
     @DeleteMapping("/delboard") //4.게시물삭제
-    public boolean deleteboard(@RequestParam("bno") int bno) {
-        return boardService.deleteboard(bno);
+    public boolean delboard(@RequestParam("bno") int bno) {
+        return boardService.delboard(bno);
     }
 
     @PutMapping("/upboard")//5.게시물 수정[첨부파일]

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
+@CrossOrigin(origins = "http://localhost:3000") //요청포트 변경 어노테이션
 @RestController //해당클래스가 RestController명시
 @RequestMapping("/member")
 public class MemberController {

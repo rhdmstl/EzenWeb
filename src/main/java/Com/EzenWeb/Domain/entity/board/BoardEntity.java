@@ -52,6 +52,7 @@ public class BoardEntity extends BaseEntity {
                 .btitle( this.btitle)
                 .bcontent( this.bcontent)
                 .bview( this.bview)
+                .bfilename(this.bfile)
                 .memail( this.memberEntity.getMemail())
                 .build();
     }
@@ -62,8 +63,7 @@ public class BoardEntity extends BaseEntity {
     String              varchar
         columnDefinition = "DB자료형" DB자료형사용가능
     빌더패턴은 순서상관없이 객체를 만들어서 안전성을 추가해줌
-*/
-/*
+
     연관관계
     @OneToOne        1 : 1      회원이 하나의 게시물만 작성 가능
     @ManyToOne       n : 1      회원이 여러개의 게시물을 작성 가능
