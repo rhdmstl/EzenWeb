@@ -1,10 +1,11 @@
 package Com.EzenWeb.Service;
 
+
 import Com.EzenWeb.Domain.Dto.BcategoryDto;
 import Com.EzenWeb.Domain.Dto.BoardDto;
 import Com.EzenWeb.Domain.Dto.GuestCategoryDto;
 import Com.EzenWeb.Domain.Dto.GuestDto;
-import Com.EzenWeb.Domain.entity.bcategory.BcategoryEntyti;
+import Com.EzenWeb.Domain.entity.bcategory.BcategoryEntity;
 import Com.EzenWeb.Domain.entity.bcategory.BcategoryRepository;
 import Com.EzenWeb.Domain.entity.board.BoardEntity;
 import Com.EzenWeb.Domain.entity.board.BoardRepository;
@@ -15,20 +16,22 @@ import Com.EzenWeb.Domain.entity.guset.GuestRepository;
 import Com.EzenWeb.Domain.entity.member.MemberEntity;
 import Com.EzenWeb.Domain.entity.member.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.transaction.Transactional;
-import java.io.*;
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
 import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 @Service //컴포넌트
 public class BoardService {//디비처리
@@ -44,7 +47,7 @@ public class BoardService {//디비처리
     @Autowired
     private BoardRepository boardRepository;    // 게시물 리포지토리 객체 선언
     @Autowired
-    private BcategoryRepository bcategoryRepository;    // 카테고리 리포지토리 객체 선언
+    private BcategoryRepository bcategoryRepository;   // 카테고리 리포지토리 객체 선언
     //////비회원게시판///////////////////////////////////////////////////////////////
     @Autowired
     private GuestRepository guestRepository;
@@ -102,47 +105,60 @@ public class BoardService {//디비처리
         }
         else{ return false; } // 2. 0 이면 entity 생성 실패
     }
-    @Transactional //1.게시물쓰기
-    public boolean setboard(BoardDto boardDto){//1.게시물쓰기[첨부파일]
-        // ---------- 로그인 회원 찾기 메소드 실행 --> 회원엔티티 검색 --------------  //
-        MemberEntity memberEntity = memberService.getEntity();
-        if( memberEntity == null ){ return false; }
-        // ------------ 선택한 카테고리 번호 --> 카테고리 엔티티 검색 --------------  //
-        Optional<BcategoryEntyti> optional = bcategoryRepository.findById( boardDto.getBcno() );
-        if ( !optional.isPresent()) { return false;}
-        BcategoryEntyti bcategoryEntity = optional.get();
-        // --------------------------  //
-        BoardEntity boardEntity  = boardRepository.save( boardDto.toEntity() );  // 1. dto --> entity [ INSERT ] 저장된 entity 반환
-        if( boardEntity.getBno() != 0 ){   // 2. 생성된 entity의 게시물번호가 0 이 아니면  성공
-            //*첨부파일등록
-            String filename = boardDto.getBfile().getOriginalFilename(); //실제 유저가 입력한 파일 읽어옴
-            fileupload( boardDto , boardEntity ); // 업로드 함수 실행
-            // 1. 회원 <---> 게시물 연관관계 대입
-            boardEntity.setMemberEntity( memberEntity ); // ***!!!! 5. fk 대입
-            memberEntity.getBoardEntities().add( boardEntity); // *** 양방향 [ pk필드에 fk 연결 ]
-            // 2. 카테고리 <---> 게시물 연관관계 대입
-            boardEntity.setBcategoryEntity( bcategoryEntity );
-            bcategoryEntity.getBoardEntityList().add( boardEntity );
-            return true;
+   @Transactional
+   public boolean setboard(BoardDto boardDto){
+       // ---------- 로그인 회원 찾기 메소드 실행 --> 회원엔티티 검색 --------------  //
+       MemberEntity memberEntity = memberService.getEntity();
+       if(memberEntity == null){return false;}
+       // ------------ 선택한 카테고리 번호 --> 카테고리 엔티티 검색 --------------  //
+       Optional<BcategoryEntity> optional = bcategoryRepository.findById(boardDto.getBcno());
+       if(!optional.isPresent()){return false;}
+       BcategoryEntity bcategoryEntity = optional.get();
+
+       BoardEntity boardEntity = boardRepository.save(boardDto.toEntity());
+       if(boardEntity.getBno() != 0){
+           fileupload(boardDto,boardEntity); //업로드
+           // 1. 회원 <---> 게시물 연관관계 대입
+           boardEntity.setMemberEntity(memberEntity);
+           memberEntity.getBoardEntities().add(boardEntity);
+           // 2. 카테고리 <---> 게시물 연관관계 대입
+           boardEntity.setBcategoryEntity(bcategoryEntity);
+           bcategoryEntity.getBoardEntityList().add(boardEntity);
+           return true;
+       }
+       else { return false; }
+   }
+
+    @Transactional   // bcno : 카테고리번호 , page : 현재 페이지 번호
+    public List<BoardDto> boardlist(int bcno , int page , String key , String keyword){
+        Page<BoardEntity> elist = null;
+
+        // 1.Pageable 인터페이스 [ import 사용시 domain 패키지 ]
+        // 2. PageRequest 구현 클래스
+        // 1. PageRequest.of( 현재페이지번호 , 표시할레코드수 )
+        Pageable pageable =  PageRequest.of( page-1 , 3 , Sort.by(Sort.Direction.DESC,"bno")); // 페이징 설정
+
+        // 3. 검색여부 / 카테고리  판단
+        if( key.equals("btitle") ){ // 검색필드가 제목이면
+            elist = boardRepository.findbybtitle( bcno , keyword , pageable);
+        }else if( key.equals("bcotent") ){ // 검색필드가 제목이면
+            elist = boardRepository.findbybcontent( bcno , keyword , pageable);
+        }else{ // 검색이 없으면 // 카테고리 출력
+            if( bcno == 0  ) elist = boardRepository.findAll( pageable);
+            else elist = boardRepository.findBybcno( bcno , pageable);
         }
-        else{ return false; } // 2. 0 이면 entity 생성 실패
-    }
-    @Transactional
-    public List<BoardDto> boardlist(int bcno){ //2.게시물 목록조회[페이징,검색]
-        List<BoardEntity> elist = null;
-        if(bcno == 0){ //전체보기(0)이면 전체보기
-            elist = boardRepository.findAll();
+        int btncount = 5;
+        int startbtn = (page/btncount);
+        int endbtn = startbtn + btncount-1;
+        if(endbtn > elist.getTotalPages()){endbtn = elist.getTotalPages();}
+        List<BoardDto> dlist = new ArrayList<>(); // 2. 컨트롤에게 전달할때 형변환[ entity->dto ] : 역할이 달라서
+        for( BoardEntity entity : elist ){ // 3. 변환
+            dlist.add( entity.toDto() );
         }
-        else{ //전체보기(0)가 아니면 카테고리별 보기
-            BcategoryEntyti bcentity = bcategoryRepository.findById(bcno).get();
-            elist = bcentity.getBoardEntityList(); //해당 엔티티의 게시물 목록
-        }
-        //컨트롤한테 전달하기위해 entity -> dto 형변환하기
-        List<BoardDto> dlist = new ArrayList<>();
-        for(BoardEntity entity : elist){    //변환
-            dlist.add(entity.toDto());
-        }
-        return dlist; //반환
+        dlist.get(0).setStartbtn(startbtn);
+        dlist.get(0).setEndbtn(endbtn);
+
+        return dlist;  // 4. 변환된 리스트 dist 반환
     }
     @Transactional
     public BoardDto getboard( int bno){ //3.게시물 개별조회
@@ -189,17 +205,18 @@ public class BoardService {//디비처리
         }else { return false; }
     }
     @Transactional
-    public boolean setbcategory( BcategoryDto bcategoryDto){    //6.카테고리 등록
-        BcategoryEntyti entity = bcategoryRepository.save(bcategoryDto.toEntity());
-        if(entity.getBcno() != 0){return true;}
-        else { return false;}
+    public boolean setbcategory(BcategoryDto bcategoryDto){
+        BcategoryEntity entity = bcategoryRepository.save(bcategoryDto.toEntity());
+        if(entity.getBcno() != 0){
+            return true;
+        }else {  return false; }
     }
     @Transactional
-    public List<BcategoryDto> bcategorylist(){  //7.모든 카테고리 출력
-        List<BcategoryEntyti> entityList = bcategoryRepository.findAll();
-        List<BcategoryDto> dtolist = new ArrayList<>();//화살표함수 [람다식표현 js] (인수) => {실행코드}
-        entityList.forEach(e -> dtolist.add(e.toDto()));
-        return dtolist;
+    public List<BcategoryDto> bcategorylist(){
+        List<BcategoryEntity> entitiesList = bcategoryRepository.findAll();
+        List<BcategoryDto> dtoList = new ArrayList<>();
+        entitiesList.forEach(e -> dtoList.add(e.toDto()));
+        return dtoList;
     }
     @Transactional
     public boolean setvisit(GuestDto guestDto){ //8.방명록 등록

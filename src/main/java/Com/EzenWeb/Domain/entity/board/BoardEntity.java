@@ -2,7 +2,7 @@ package Com.EzenWeb.Domain.entity.board;
 
 import Com.EzenWeb.Domain.Dto.BoardDto;
 import Com.EzenWeb.Domain.entity.BaseEntity;
-import Com.EzenWeb.Domain.entity.bcategory.BcategoryEntyti;
+import Com.EzenWeb.Domain.entity.bcategory.BcategoryEntity;
 import Com.EzenWeb.Domain.entity.member.MemberEntity;
 import lombok.*;
 import org.hibernate.annotations.ColumnDefault;
@@ -43,7 +43,7 @@ public class BoardEntity extends BaseEntity {
     @ManyToOne //fk
     @JoinColumn(name = "bcno")
     @ToString.Exclude
-    private BcategoryEntyti bcategoryEntity;
+    private BcategoryEntity bcategoryEntity;
 
     //형변환_빌더패턴을 이용한 객체생성[builder=시작,build=끝](메소드)
     public BoardDto toDto(){

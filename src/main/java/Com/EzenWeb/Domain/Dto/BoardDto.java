@@ -24,6 +24,9 @@ public class BoardDto {
     private int bcno;
     private String memail;
 
+    private int startbtn; // 시작버튼
+    private int endbtn; //끝버튼
+
     //형변환_생성자를 이용한 객체생성[builder=시작,build=끝]
     //생성자를 이용한 객체사용할때는 순서가 틀리면 깨지고 풀생성자가 아니면 또 만들어줘야함
     public BoardEntity toEntity(){
