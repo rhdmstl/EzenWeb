@@ -1,0 +1,125 @@
+
+1. 클라이언트	[ JS ]				 contentType: "application/json"
+	DTO
+2. 컨트롤러	[ @RestController ]			@RequestBody
+	DTO
+3. 서비스		[ @Service ]
+	Entity
+4. 리포지토리	[ @Repository ]
+	Entity
+5. 데이터베이스	[ MySQL ]
+
+------------------------------------------------------------
+* DTO : 이동객체 [ DTO ---> Entity 변환메소드 ]
+* Entity : DB테이블과 매핑(연결)된 객체
+	- JPA : ORM 객체 관련 매핑
+
+
+	자바	ORM표준기술	DB
+		JPA인터페이스
+
+	1. 엔티티 클래스 생성
+	@Entity
+	public class MemberEntity{
+		필드
+	}
+
+	2. 인터페이스 생성
+		public interface MemberRepository
+
+	3. 상속을 이용한 엔티티와 매핑	
+		public interface MemberRepository extends JpaRepository< 엔티티클래스명, PK필드자료형 >
+
+----------------------------------------------------------------
+	@RequestMapping
+
+
+
+
+
+------------------------------------------------------------------
+세션
+	1. 세션 객체[ request 요청객체 선언 ]
+		@Autowired
+		private HttpServletRequest request;
+
+	2. 세션 호출[ 요청 객체.getSession() ]
+		request.getSession()
+
+	3. 세션 저장
+		request.getSession().setAttribute( "세션명", 데이터 );
+
+	4. 세션 호출
+		request.getSession().getAttribute( "세션명" );
+
+
+JPA 메소드
+	@Autowired // 스프링 컨테이너 빈 생성 [ 외부에 메모리 위임 ]
+    	private MemberService memberService;
+	
+
+	1. repository객체.save( 데이터 )	insert
+		* 반환타입 : 생성된 엔티티
+
+	2. repository객체.findAll()		select
+		* 반환타입 : List<엔티티>
+
+	3. repository객체.findById( pk데이터 )	해당 pk의 레코드 select
+		* 반환타입 : Optional<엔티티> 객체
+			검색된 결과가 없으면 / Optional객체명 = null
+			검색된 결과가 있으면 / Optional객체명 = 엔티티
+
+	4. repository객체.delete( 엔티티 )	해당 엔티티의 delete
+
+	5. update[ x ] : 엔티티 객체 <--- 매핑 ----> 테이블의 레코드	set메소드 사용
+
+Optional : null 체크 메소드 제공해주는 클래스
+	
+	1. isPresent() : Optional 객체내 객체 존재 여부 판단
+		null이면 false, null이 아니면 true
+
+	2. .get() : Optional 객체내 존재하는 객체[엔티티] 호출
+-------------------------------------------------------------------------------------------------------------------------
+DB용어
+	DB 입장의 업무처리 : SQL
+
+	트랜잭션 : 일[SQL 질의어] 처리 단위
+
+		마지막 commit부터 현재 commit까지의 DML 1개 이상의 작업단위
+
+		DML [ 1개 이상의 SQL ]
+			insert
+			update
+			delete
+			insert
+
+		- 특징
+		1. 원자성( Atomicity )	: 결과가 하나!! [ 성공 또는 실패 ] --> 제일 중요!!
+		2. 일관성( consistency )	: 결과가 일관적(고정) 이다. [ 바뀌지 않는다. ]
+		3. 독립성( Isolation )	: 다른 트랜잭션 연관없다.
+		4. 지속성( Durability )	: 결과가 영구저장
+
+		rollback;	-- 마지막 commit전으로 되돌리기
+		commit;	-- 마지막 commit부터 현재 commit 영구저장
+
+
+		---> 부분 완료 	---> 완료[ Commit ]
+	실행
+		---> 실패		---> 취소[ Rollback ]
+
+-------------------------------------------------------------------------------------------------------------------------
+
+	Spring 프레임워크 [ 틀 ]
+
+@RestController : Restful Api를 사용하는 컨트롤 명시
+
+	Restful Api
+		@RequestMapping
+		@GetMapping		: 호출
+		@PostMapping		: 개인정보, 저장
+		@DeleteMapping		: 삭제
+		@PutMapping		: 수정
+
+@Service : 비지니스 로직 [ 알고리즘 ]
+
+

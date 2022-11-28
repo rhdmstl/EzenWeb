@@ -55,7 +55,7 @@ public class BoardService {//디비처리
     private GuestCategoryRepository guestCategoryRepository;
     ///////////////////////////////////////////////////////////////////////////////
     //*첨부파일 경로
-    String path = "C:\\Users\\504\\Desktop\\springweb\\EzenWeb\\src\\main\\resources\\static\\";
+    String path = "C:\\Users\\504\\Desktop\\springweb\\EzenWeb\\src\\main\\resources\\static";
     //==========================서비스==================================//
     //0.첨부파일 다운
     public void filedown(String filename){

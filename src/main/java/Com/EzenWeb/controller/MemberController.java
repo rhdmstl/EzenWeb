@@ -5,10 +5,8 @@ import Com.EzenWeb.Service.MemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
-import org.springframework.stereotype.Repository;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @CrossOrigin(origins = "http://localhost:3000") //요청포트 변경 어노테이션
@@ -54,11 +52,11 @@ public class MemberController {
         return result;
     }
 
-    @PostMapping("/getmember")//로그인
+    /*@PostMapping("/getmember")//로그인 [시큐리티 사용]
     public int getmember(@RequestBody MemberDto memberDto) {
         int result = memberService.getmember(memberDto);
         return result;
-    }
+    }*/
 
     @GetMapping("/getpassword")
     public String getpassword(@RequestParam("memail") String memail) {

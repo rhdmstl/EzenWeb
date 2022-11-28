@@ -51,8 +51,8 @@ public class MemberService {
         // 2. 결과 반환 [ 생성된 엔티티의 pk값 반환 ]
         return entity.getMno();
     }
-    // 2. 로그인
-    @Transactional
+    // 2. 로그인 [시큐리티 사용]
+   /* @Transactional
     public int getmember(MemberDto memberDto ){
         // 1. Dao 처리 [ select ]
         // 1. 모든 엔티티=레코드 호출 [ select * from member ]
@@ -70,7 +70,7 @@ public class MemberService {
             }
         }
         return 0; // 아이디가 틀림
-    }
+    }*/
     // 3. 비밀번호찾기
     @Transactional
     public String getpassword( String memail ){
