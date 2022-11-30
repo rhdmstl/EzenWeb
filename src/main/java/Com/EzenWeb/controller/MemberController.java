@@ -46,58 +46,63 @@ public class MemberController {
 
 
     // --------------------------------- 서비스/기능 매핑 ------------------------------------- //
-    @PostMapping("/setmember") //회원가입
-    public int setmember(@RequestBody MemberDto memberDto) {
-        int result = memberService.setmember(memberDto);
+    @PostMapping("/setmember") // 1. 회원가입 기능
+    public int setmember( @RequestBody MemberDto memberDto  ){
+        int result = memberService.setmember( memberDto ); // 1. 서비스[ 비지니스 로직 ] 호출
+        return result;  // 2. 반환
+    }
+    /*  @PostMapping("/getmember") // 2. 로그인 기능 [ 시큐리티 사용시 필요없음 ]
+      public int getmember( @RequestBody MemberDto memberDto ){
+          int result = memberService.getmember( memberDto );
+          return result;
+      }*/
+    @GetMapping("/getpassword") // 3. 이메일찾기
+    public String getpassword( @RequestParam("memail") String memail ){
+        String result = memberService.getpassword( memail );
         return result;
     }
 
-    /*@PostMapping("/getmember")//로그인 [시큐리티 사용]
-    public int getmember(@RequestBody MemberDto memberDto) {
-        int result = memberService.getmember(memberDto);
-        return result;
-    }*/
-
-    @GetMapping("/getpassword")
-    public String getpassword(@RequestParam("memail") String memail) {
-        String result = memberService.getpassword(memail);
+    @DeleteMapping("/setdelete") //  4. 탈퇴
+    public int setdelete( @RequestParam("mpassword") String mpassword ){
+        // 1. 서비스처리
+        int result = memberService.setdelete( mpassword );
+        // 2. 서비스결과 반환
         return result;
     }
 
-    @DeleteMapping("/setdelete")
-    public int setdelete(@RequestParam("mpassword") String mpassword) {
-        int result = memberService.setdelete(mpassword);
-        return result;
-    }
-
-    @PutMapping("/setupdate")
-    public int setupdate(@RequestParam("mpassword") String mpassword) {
+    @PutMapping("setupdate") // 5. 비밀번호 수정
+    public int setupdate( @RequestParam("mpassword") String mpassword){
         int result = memberService.setupdate(mpassword);
         return result;
+
     }
 
-    @GetMapping("/getloginMno")
-    public int getloginMno() {
-        int result = memberService.getloginMno();
+    @GetMapping("/getloginMno")  // 6.
+    public  String getloginMno(){
+        String result = memberService.getloginMno();
         return result;
+
     }
 
-    @GetMapping("/logoutMno")
-    public int logoutMno() {
-        int result = memberService.logoutMno();
-        return result;
+/*
+    @GetMapping("/logout") // 7. 로그아웃
+    public  void logout(){
+         memberService.logout();
     }
+*/
 
-    @GetMapping("/list") // 8. 회원 목록
+    @GetMapping("/list") // 8. 회원목록
     @ResponseBody
-    public List<MemberDto> list() {
+    public List<MemberDto> list(){
         List<MemberDto> list = memberService.list();
-        System.out.println("확인:" + list);
+        System.out.println("확인 : "+list);
         return list;
     }
+
     @GetMapping("/getauth")
-    public String getauth(@RequestParam("toemail")String toemail) {
-        //return memberService.getauth(toemail);
-        return "1234";
+    public  String getauth(@RequestParam("toemail") String toemail){
+        //  return  memberService.getauth( "dlwhdgns47@naver.com" );
+        return  "1234";
     }
+
 }

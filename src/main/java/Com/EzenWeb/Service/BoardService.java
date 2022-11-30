@@ -120,7 +120,7 @@ public class BoardService {//디비처리
            fileupload(boardDto,boardEntity); //업로드
            // 1. 회원 <---> 게시물 연관관계 대입
            boardEntity.setMemberEntity(memberEntity);
-           memberEntity.getBoardEntities().add(boardEntity);
+           memberEntity.getBoardEntityList().add(boardEntity);
            // 2. 카테고리 <---> 게시물 연관관계 대입
            boardEntity.setBcategoryEntity(bcategoryEntity);
            bcategoryEntity.getBoardEntityList().add(boardEntity);

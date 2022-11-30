@@ -18,22 +18,26 @@ public class MemberDto  implements UserDetails {
     private int mno;
     private String memail;
     private String mpassword;
-
-    private String mphone;
-
+    private String mphone;      // 전화번호 필드
     private Set<GrantedAuthority> authorities;
-    //dto --> entity로 변환
-    public  MemberEntity toEntity(){
+    // GrantedAuthority : 권한[토큰]
+    // * dto ---> entity 변환
+    public MemberEntity toEntity(){
         return MemberEntity.builder()
-                    .mno(this.mno)
-                    .memail(this.memail)
-                    .mpassword(this.mpassword)
-                    .mphone(this.mphone)
-                    .build();
+                .mno(this.mno)
+                .memail(this.memail)
+                .mpassword(this.mpassword)
+                .mphone(this.mphone)
+                .build();
     }
+
+    public void setAuthorities(Set<GrantedAuthority> authorities) {
+        this.authorities = authorities;
+    }
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return null;
+        return authorities;
     }
 
     @Override
@@ -65,5 +69,6 @@ public class MemberDto  implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
 
 }
