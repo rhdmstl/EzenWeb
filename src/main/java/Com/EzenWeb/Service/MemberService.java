@@ -6,18 +6,22 @@ import Com.EzenWeb.Domain.entity.member.MemberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Random;
+import java.util.*;
 
 @Service //해당클래스가 Service명시
-public class MemberService {
+public class MemberService implements UserDetailsService {
     // ------------------------------- 전역 객체 -------------------------------//
     @Autowired
     private MemberRepository memberRepository;
@@ -26,6 +30,7 @@ public class MemberService {
     //mail sender 객체
     @Autowired
     private JavaMailSender mailSender;
+
     // -------------------------------- 서비스 메소드 --------------------------//
     //0.로그인된 엔티티 호출
     public MemberEntity getEntity(){
@@ -45,6 +50,9 @@ public class MemberService {
     // 1. 회원가입
     @Transactional
     public int setmember(MemberDto memberDto ){
+        //암호화[해시함수]
+        BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+        memberDto.setMpassword(passwordEncoder.encode(memberDto.getPassword()));
         // 1. DAO 처리 [ insert ]
         MemberEntity entity = memberRepository.save( memberDto.toEntity() );
         // memberRepository.save( 엔티티 객체 ) : 해당 엔티티 객체가 insert 생성된 엔티티객체 반환
@@ -71,6 +79,26 @@ public class MemberService {
         }
         return 0; // 아이디가 틀림
     }*/
+    //2.시큐리티 사용 시 로그인 인증메소드
+
+
+    @Override
+    public UserDetails loadUserByUsername(String memail) throws UsernameNotFoundException {
+
+        /*Optional<MemberEntity> optional = memberRepository.findByMemail( memail ); //회원정보 찾기
+        if(!optional.isPresent()){return null;} //검색이 없으면 나가기*/
+        //엔티티에서 회원정보가 검색에 안뜨면 [ orElseThrow : 검색결과 없으면 ]
+        MemberEntity memberEntity = memberRepository.findByMemail(memail).orElseThrow(()->new UsernameNotFoundException("없는 사용자입니다"));
+        //토큰생성
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        authorities.add(new SimpleGrantedAuthority("일반회원")); //토큰 정보에 일반회원 정보 넣기
+
+        MemberDto memberDto = memberEntity.toDto(); //엔티티 -> 디티오 변환
+        memberDto.setAuthorities(authorities);      //디티오에 토큰 추가
+
+        return memberDto; //구현체 반환 [인터페이스의 추상메소드]
+    }
+
     // 3. 비밀번호찾기
     @Transactional
     public String getpassword( String memail ){

@@ -7,11 +7,11 @@
 <body>
 
     <h3>로그인</h3>
-    이메일 : <input type="text" class="memail"><br>
-    비밀번호 : <input type="mpassword" class="mpassword"><br>
-    <button type="button" onclick="getmember()">로그인</button>
-
-
+    <form method="post" action="/member/getmember">
+        이메일 : <input type="text" name="memail"><br>
+        비밀번호 : <input type="mpassword" name="mpassword"><br>
+        <button type="submit" value="로그인"></button>
+    </form>
 
     <script  src="http://code.jquery.com/jquery-latest.min.js"></script>
     <script src="/static/js/member/login.js"></script>

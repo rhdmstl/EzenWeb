@@ -1,3 +1,4 @@
+/*
 alert('dd')
 
 function getmember(){
@@ -18,4 +19,4 @@ function getmember(){
             location.href = '/';
         }
     })
-}
+}*/
