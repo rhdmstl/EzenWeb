@@ -4,8 +4,10 @@ import Com.EzenWeb.Domain.entity.member.MemberEntity;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Collection;
+import java.util.Map;
 import java.util.Set;
 
 @NoArgsConstructor //빈생성자
@@ -14,13 +16,23 @@ import java.util.Set;
 @Setter //세터
 @ToString //투스트링
 @Builder //객체생성 안전성보장
-public class MemberDto  implements UserDetails {
+public class MemberDto  implements UserDetails , OAuth2User {
+//                                  구현체
+
+    @Override
+    public String getName() { return this.memail; }
+
+    @Override
+    public Map<String, Object> getAttributes() { return this.attributes; }
+
     private int mno;
     private String memail;
     private String mpassword;
     private String mphone;      // 전화번호 필드
     private Set<GrantedAuthority> authorities;
     // GrantedAuthority : 권한[토큰]
+    private Map<String,Object> attributes; //OAuth인증결과
+
     // * dto ---> entity 변환
     public MemberEntity toEntity(){
         return MemberEntity.builder()
@@ -31,6 +43,7 @@ public class MemberDto  implements UserDetails {
                 .build();
     }
 
+    //return 해야 토큰이 생성됨
     public void setAuthorities(Set<GrantedAuthority> authorities) {
         this.authorities = authorities;
     }
@@ -39,6 +52,8 @@ public class MemberDto  implements UserDetails {
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return authorities;
     }
+
+    //===============================================================================================//
 
     @Override
     public String getPassword() {
@@ -69,6 +84,5 @@ public class MemberDto  implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
-
 
 }

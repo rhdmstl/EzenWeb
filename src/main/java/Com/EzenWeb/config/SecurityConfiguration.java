@@ -17,31 +17,39 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
     @Autowired
     private MemberService memberService;
 
-    @Override
+    @Override //인증(로그인)관련 메소드 재정의
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
+        //
         auth.userDetailsService(memberService).passwordEncoder((new BCryptPasswordEncoder()) );
+        // memberService에서 userDetailsService구현했다
+        // AuthenticationManagerBuilder : 토큰 전달
+        // passwordEncoder((new BCryptPasswordEncoder())) : 비밀번호 검증 (빌드매니저가 DTO 지나서 검사함)
     }
 
     @Override   // 재정의 [ 상속받은 클래스로부터 메소드 재구현 ]
     protected void configure(HttpSecurity http) throws Exception {
 
         http
-                .formLogin()                            // 로그인 페이지 보안 설정
-                .loginPage("/member/login")  // 아이디와 비밀번호를 입력받을 URL [ 로그인 페이지 ]
-                .loginProcessingUrl("/member/getmember")    // 로그인을 처리할 URL
-                .defaultSuccessUrl("/") // 로그인 성공했을때 이동할 URL
-                .failureUrl("/member/login")  // 로그인 실패시 이동할 URL
-                .usernameParameter("memail")             // 아이디 변수명
-                .passwordParameter("mpassword")     // 비밀번호 변수명
-                .and()  // 기능구분
-                .logout()   // 로그아웃 보안설정
-                .logoutRequestMatcher( new AntPathRequestMatcher("/member/logout"))  // 로그아웃 처리 URL 정의
-                .logoutSuccessUrl("/") // 로그아웃 성공시 이동할 URL
-                .invalidateHttpSession(true) // 세션 초기화 [ principal ]
-                .and()  // 기능구분
-                .csrf() // 요청 위조 방지
-                .ignoringAntMatchers("/member/getmember")  // 해당 URL 요청 방지 해지
-                .ignoringAntMatchers("/member/setmember") ; // 회원가입 post 사용
+                .formLogin()                                                                    // 로그인 페이지 보안 설정
+                    .loginPage("/member/login")                                                 // 아이디와 비밀번호를 입력받을 URL [ 로그인 페이지 ]
+                    .loginProcessingUrl("/member/getmember")                                    // 로그인을 처리할 URL
+                    .defaultSuccessUrl("/")                                                     // 로그인 성공했을때 이동할 URL
+                    .failureUrl("/member/login")                              // 로그인 실패시 이동할 URL
+                    .usernameParameter("memail")                                                // 아이디 변수명
+                    .passwordParameter("mpassword")                                             // 비밀번호 변수명
+                .and()                                                                          // 기능구분
+                    .logout()                                                                   // 로그아웃 보안설정
+                    .logoutRequestMatcher( new AntPathRequestMatcher("/member/logout"))  // 로그아웃 처리 URL 정의
+                    .logoutSuccessUrl("/")                                                      // 로그아웃 성공시 이동할 URL
+                    .invalidateHttpSession(true)                                                // 세션 초기화 [ principal ]
+                .and()                                                                          // 기능구분
+                .csrf()                                                                         // 요청 위조 방지
+                    .ignoringAntMatchers("/member/getmember")                        // 해당 URL 요청 방지 해지
+                    .ignoringAntMatchers("/member/setmember")                        // 회원가입 post 사용
+                .and()
+                    .oauth2Login()                                                               //소셜로그인 보안설정
+                    .userInfoEndpoint()                                                          //회원정보 받는곳
+                    .userService(memberService);                                                 //해당 서비스 구현
         //  super.configure(http); // 모든 HTTP 보안설정
 
     }

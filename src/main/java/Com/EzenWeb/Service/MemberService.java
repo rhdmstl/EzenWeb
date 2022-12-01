@@ -1,6 +1,7 @@
 package Com.EzenWeb.Service;
 
 import Com.EzenWeb.Domain.Dto.MemberDto;
+import Com.EzenWeb.Domain.Dto.OathDto;
 import Com.EzenWeb.Domain.entity.member.MemberEntity;
 import Com.EzenWeb.Domain.entity.member.MemberRepository;
 import Com.EzenWeb.config.SecurityConfiguration;
@@ -16,6 +17,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
+import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import javax.mail.internet.MimeMessage;
@@ -23,8 +29,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 import java.util.*;
 
-@Service //해당클래스가 Service명시
-public class MemberService implements UserDetailsService {
+@Service //해당클래스가 Service명시 ///implements UserDetailsService 시큐리티를 통해 임포트
+public class MemberService implements UserDetailsService , OAuth2UserService<OAuth2UserRequest, OAuth2User> {
     // ------------------------------- 전역 객체 -------------------------------//
     @Autowired
     private MemberRepository memberRepository;
@@ -108,7 +114,7 @@ public class MemberService implements UserDetailsService {
         // 3.
         MemberDto memberDto = memberEntity.toDto();  // 엔티티 --> Dto
         memberDto.setAuthorities( authorities );    // dto --> 토큰 추가
-        return memberDto;  // dto 반환 [ ]
+        return memberDto;  // dto 반환 [ ]    //빌드매니저가 비밀번호 검사함
         // 구현체 : 해당 인터페이스의 추상메소드[ 선언만 ] 구현한 클래스의 객체
     }
 
@@ -191,14 +197,10 @@ public class MemberService implements UserDetailsService {
         if (principal.equals("anonymousUser")) {  // anonymousUser 이면 로그인전
             return null;
         } else { // anonymousUser 아니면 로그인후
-            MemberDto memberDto = (MemberDto) principal;
-            return memberDto.getMemail();
+            MemberDto memberDto = (MemberDto) principal; //오브젝트임
+            return memberDto.getMemail()+"_"+memberDto.getAuthorities();
         }
     }
-
-
-
-    // 7. 로그아웃
 
     // 시큐리티 쓰기전
   /*  public  void logout(){
@@ -258,6 +260,35 @@ public class MemberService implements UserDetailsService {
     }
 
 
+    @Override
+    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        //1.인증[로그인] 정보요청
+        OAuth2UserService oAuth2UserService = new DefaultOAuth2UserService();
+        OAuth2User oAuth2User = oAuth2UserService.loadUser(userRequest);
+
+        //2.oath2 클라이언트 식별 [네이버 vs 카카오 vs 구글]
+        String registrationId = userRequest.getClientRegistration().getRegistrationId();
+
+        //3.회원정보 [ JSON ]
+        String oath2UserInfo = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
+        System.out.println("회원정보 확인"+oath2UserInfo);
+
+        //4.dto처리
+        OathDto oathDto = OathDto.of(registrationId,oath2UserInfo,oAuth2User.getAttributes());
+        //DB처리
+
+
+        //권한
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        authorities.add(new SimpleGrantedAuthority("KakaoUser"));
+
+        //5.반환
+        MemberDto memberDto = new MemberDto();
+            memberDto.setMemail(oathDto.getMemail());
+            memberDto.setAuthorities(authorities);
+            memberDto.setAttributes(oAuth2User.getAttributes());
+        return memberDto;
+    }
 }
 
 

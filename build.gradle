@@ -26,11 +26,10 @@ dependencies {
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa' //스프링데이터 JPA
     implementation 'org.springframework.boot:spring-boot-starter-mail' //메일 스프링 SMTP
-    implementation 'org.springframework.boot:spring-boot-starter-security' //인증 인가
-    /*
-        ORM : 객체관계 매핑(자바랑 DB 묶음)
+    implementation 'org.springframework.boot:spring-boot-starter-security' //인증 인가[ 보안 ]
+    implementation 'org.springframework.boot:spring-boot-starter-oauth2-client' //Oauth sns인증 소셜로그인
 
-     */
+        //ORM : 객체관계 매핑(자바랑 DB 묶음)
 }
 
 tasks.named('test') {
