@@ -25,9 +25,9 @@ public class MemberEntity extends BaseEntity {
     private int mno; // 회원번호 필드
     @Column(nullable = false) // db = not null
     private String memail; // 회원이메일 = 아이디
-    @Column(nullable = false)  // db = not null
+    @Column
     private String mpassword; // 비밀번호 필드
-    @Column(nullable = false)  // db = not null
+    @Column
     private String mphone;      // 전화번호 필드
     // 연관관계
     @OneToMany(mappedBy = "memberEntity") // [ 1: n ]일때 PK에 해당 어노테이션  mappedBy = "fk필드명"

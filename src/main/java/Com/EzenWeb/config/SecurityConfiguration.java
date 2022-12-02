@@ -48,6 +48,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
                     .ignoringAntMatchers("/member/setmember")                        // 회원가입 post 사용
                 .and()
                     .oauth2Login()                                                               //소셜로그인 보안설정
+                    .defaultSuccessUrl("/")                                                     //소셜 로그인 성공시 이동 URL
                     .userInfoEndpoint()                                                          //회원정보 받는곳
                     .userService(memberService);                                                 //해당 서비스 구현
         //  super.configure(http); // 모든 HTTP 보안설정

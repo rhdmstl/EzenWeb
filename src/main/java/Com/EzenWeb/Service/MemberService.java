@@ -31,6 +31,46 @@ import java.util.*;
 
 @Service //해당클래스가 Service명시 ///implements UserDetailsService 시큐리티를 통해 임포트
 public class MemberService implements UserDetailsService , OAuth2UserService<OAuth2UserRequest, OAuth2User> {
+    @Override
+    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
+        //1.인증[로그인] 정보요청
+        OAuth2UserService oAuth2UserService = new DefaultOAuth2UserService();
+        OAuth2User oAuth2User = oAuth2UserService.loadUser(userRequest);
+
+        //2.oath2 클라이언트 식별 [네이버 vs 카카오 vs 구글]
+        String registrationId = userRequest.getClientRegistration().getRegistrationId();
+
+        //3.회원정보 [ JSON ]
+        String oath2UserInfo = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
+        System.out.println("회원정보 확인"+oath2UserInfo);
+
+        //4.dto처리
+        OathDto oathDto = OathDto.of(registrationId,oath2UserInfo,oAuth2User.getAttributes());
+
+        //5.DB처리
+        ///1.이메일로 엔티티 확인 [기존 회원 확인]
+        Optional<MemberEntity> optional = memberRepository.findByMemail(oathDto.getMemail());
+        MemberEntity memberEntity = null;
+        if(optional.isPresent()) {   //Optional : null오류 방지를 위한 예외처리 방지
+            if (optional.get().getMrol().equals(registrationId)) {
+                memberEntity = optional.get();
+            } else {  //신규 회원일때
+                memberEntity = memberRepository.save(oathDto.toEntity());
+            }
+        }
+        System.out.println("1번"+memberEntity);
+
+        //권한
+        Set<GrantedAuthority> authorities = new HashSet<>();
+        authorities.add(new SimpleGrantedAuthority(memberEntity.getMrol()));
+
+        //6.반환[세션]
+        MemberDto memberDto = new MemberDto();
+        memberDto.setMemail(memberEntity.getMemail());
+        memberDto.setAuthorities(authorities);
+        memberDto.setAttributes(oAuth2User.getAttributes());
+        return memberDto;
+    }
     // ------------------------------- 전역 객체 -------------------------------//
     @Autowired
     private MemberRepository memberRepository;
@@ -260,35 +300,7 @@ public class MemberService implements UserDetailsService , OAuth2UserService<OAu
     }
 
 
-    @Override
-    public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
-        //1.인증[로그인] 정보요청
-        OAuth2UserService oAuth2UserService = new DefaultOAuth2UserService();
-        OAuth2User oAuth2User = oAuth2UserService.loadUser(userRequest);
 
-        //2.oath2 클라이언트 식별 [네이버 vs 카카오 vs 구글]
-        String registrationId = userRequest.getClientRegistration().getRegistrationId();
-
-        //3.회원정보 [ JSON ]
-        String oath2UserInfo = userRequest.getClientRegistration().getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
-        System.out.println("회원정보 확인"+oath2UserInfo);
-
-        //4.dto처리
-        OathDto oathDto = OathDto.of(registrationId,oath2UserInfo,oAuth2User.getAttributes());
-        //DB처리
-
-
-        //권한
-        Set<GrantedAuthority> authorities = new HashSet<>();
-        authorities.add(new SimpleGrantedAuthority("KakaoUser"));
-
-        //5.반환
-        MemberDto memberDto = new MemberDto();
-            memberDto.setMemail(oathDto.getMemail());
-            memberDto.setAuthorities(authorities);
-            memberDto.setAttributes(oAuth2User.getAttributes());
-        return memberDto;
-    }
 }
 
 
