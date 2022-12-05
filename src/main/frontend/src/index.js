@@ -3,13 +3,13 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-import Index from "./component/Index";
-
 
 // 1. 사용할 컴포넌트 호출 [ import 컴포넌트명 from 파일명 ]
 import Library from './Book/chapter3/Library'
 import Clock from './Book/chapter4/Clock'
 import CommentList from './Book/chapter5/CommentList'
+import Index from "./component/Index";
+import NotificationList from "./Book/chapter6/NotificationList";
 
 
 import Signup from './component/member/Signup';
@@ -61,10 +61,20 @@ setInterval(()=>{
 });
 */
 
+/*
 setInterval(()=>{
     root.render(
         <React.StrictMode>
             <Index />
+        </React.StrictMode>
+    );
+});
+*/
+
+setInterval(()=>{
+    root.render(
+        <React.StrictMode>
+            <NotificationList />
         </React.StrictMode>
     );
 });

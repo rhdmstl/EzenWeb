@@ -1,0 +1,11 @@
+.wrapper{
+    margin: 8px;
+    padding: 8px;
+    display: flex;
+    flex-direction: row;
+    border: 1px solid gray;
+    border-radius: 16px;
+}
+.messageText{
+    color: #282c34; font-size: 16px;
+}
